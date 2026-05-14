@@ -1,0 +1,690 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SCENTORY 물품 입출고 체크 v6</title>
+<style>
+:root {
+  --purple: #534AB7;
+  --purple-light: #EEF0FA;
+  --purple-dark: #3C3489;
+  --amber: #854F0B;
+  --amber-light: #FAEEDA;
+  --green: #1D9E75;
+  --red: #E24B4A;
+  --border: rgba(0,0,0,0.1);
+  --bg: #fff;
+  --bg2: #f7f7f5;
+  --bg3: #f0efea;
+  --text: #1a1a1a;
+  --text2: #666;
+  --text3: #999;
+  --radius: 8px;
+  --radius-lg: 12px;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --border: rgba(255,255,255,0.1);
+    --bg: #1c1c1e;
+    --bg2: #2c2c2e;
+    --bg3: #3a3a3c;
+    --text: #f5f5f5;
+    --text2: #aaa;
+    --text3: #666;
+    --purple-light: #26215C;
+    --amber-light: #412402;
+  }
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: -apple-system, 'Apple SD Gothic Neo', 'Noto Sans KR', sans-serif; background: var(--bg); color: var(--text); font-size: 14px; }
+.app { max-width: 900px; margin: 0 auto; padding: 1.5rem 1rem 3rem; }
+
+/* top bar */
+.top-bar { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.2rem; flex-wrap: wrap; gap: 10px; }
+.title { font-size: 17px; font-weight: 600; color: var(--text); display: flex; align-items: center; gap: 8px; }
+.top-right { display: flex; gap: 6px; align-items: center; flex-wrap: wrap; }
+.stage-tabs { display: flex; gap: 5px; flex-wrap: wrap; }
+.tab { padding: 6px 12px; border-radius: var(--radius); border: 0.5px solid var(--border); font-size: 12px; cursor: pointer; background: var(--bg); color: var(--text2); transition: all 0.15s; }
+.tab.active { background: var(--purple); color: #fff; border-color: var(--purple); }
+.btn { padding: 6px 12px; border-radius: var(--radius); border: 0.5px solid var(--border); font-size: 12px; cursor: pointer; background: var(--bg); color: var(--text2); display: inline-flex; align-items: center; gap: 5px; transition: all 0.15s; }
+.btn:hover { background: var(--bg2); }
+.btn.admin-on { background: var(--amber); color: #fff; border-color: var(--amber); }
+.btn.primary { background: var(--purple); color: #fff; border-color: var(--purple); }
+
+/* drive status bar */
+.drive-bar { display: flex; align-items: center; gap: 8px; padding: 8px 12px; background: var(--bg2); border-radius: var(--radius); margin-bottom: 1rem; border: 0.5px solid var(--border); font-size: 12px; color: var(--text2); }
+.drive-dot { width: 7px; height: 7px; border-radius: 50%; background: #ccc; flex-shrink: 0; transition: background 0.3s; }
+.drive-dot.ok { background: var(--green); }
+.drive-dot.saving { background: #EF9F27; animation: blink 0.8s infinite; }
+.drive-dot.error { background: var(--red); }
+@keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.3} }
+.drive-bar .spacer { flex: 1; }
+.drive-bar .time { color: var(--text3); font-size: 11px; }
+.drive-bar .who { font-size: 11px; padding: 1px 7px; border-radius: 20px; background: var(--purple-light); color: var(--purple-dark); }
+
+/* sign-in button */
+.signin-block { text-align: center; padding: 2rem 1rem; background: var(--bg2); border-radius: var(--radius-lg); margin-bottom: 1rem; border: 0.5px solid var(--border); }
+.signin-block p { font-size: 13px; color: var(--text2); margin-bottom: 12px; }
+.google-btn { display: inline-flex; align-items: center; gap: 8px; padding: 9px 18px; border-radius: var(--radius); border: 0.5px solid var(--border); background: var(--bg); color: var(--text); font-size: 13px; cursor: pointer; font-weight: 500; transition: all 0.15s; }
+.google-btn:hover { background: var(--bg2); }
+.google-btn svg { flex-shrink: 0; }
+
+/* summary */
+.summary-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 8px; margin-bottom: 1.2rem; }
+.stat-card { background: var(--bg2); border-radius: var(--radius); padding: 10px 12px; }
+.stat-label { font-size: 11px; color: var(--text3); margin-bottom: 4px; }
+.stat-val { font-size: 20px; font-weight: 600; color: var(--text); }
+.stat-sub { font-size: 11px; color: var(--text3); margin-top: 2px; }
+.stat-val.ok { color: var(--green); }
+.stat-val.warn { color: var(--red); }
+
+.info-bar { font-size: 12px; color: var(--text3); padding: 7px 12px; background: var(--bg2); border-radius: var(--radius); margin-bottom: 1rem; }
+
+/* table */
+.table-wrap { border: 0.5px solid var(--border); border-radius: var(--radius-lg); overflow: hidden; margin-bottom: 1.2rem; overflow-x: auto; }
+table { width: 100%; border-collapse: collapse; font-size: 13px; table-layout: fixed; min-width: 500px; }
+th { background: var(--purple); color: #fff; font-weight: 500; padding: 9px 8px; text-align: center; font-size: 12px; }
+th:first-child { text-align: left; }
+td { padding: 7px 8px; border-top: 0.5px solid var(--border); color: var(--text); text-align: center; vertical-align: middle; }
+td:first-child { text-align: left; }
+tr:nth-child(even) td { background: var(--bg2); }
+.group-hdr td { background: var(--purple-light) !important; font-weight: 600; font-size: 11px; color: var(--purple-dark); padding: 5px 8px; }
+.group-hdr.adm td { background: var(--amber-light) !important; color: var(--amber); }
+.scent-badge { display: inline-block; font-size: 11px; padding: 1px 6px; border-radius: 20px; margin-left: 4px; }
+.sc-s { background: #E3F2FD; color: #0C447C; }
+.sc-g { background: #E1F5EE; color: #085041; }
+.sc-f { background: #FBEAF0; color: #72243E; }
+.num-input { width: 62px; border: 0.5px solid var(--border); border-radius: var(--radius); padding: 4px; text-align: center; font-size: 13px; background: var(--bg); color: var(--text); }
+.num-input:focus { outline: none; box-shadow: 0 0 0 2px rgba(83,74,183,0.25); border-color: var(--purple); }
+.num-input.flash { border-color: var(--green); box-shadow: 0 0 0 2px rgba(29,158,117,0.2); }
+.adm-input { width: 76px; border: 0.5px solid var(--amber); border-radius: var(--radius); padding: 4px; text-align: center; font-size: 12px; background: var(--amber-light); color: var(--amber); }
+.adm-name { width: 120px; border: 0.5px solid var(--amber); border-radius: var(--radius); padding: 4px; font-size: 12px; background: var(--amber-light); color: var(--amber); }
+.adm-scent { width: 64px; border: 0.5px solid var(--amber); border-radius: var(--radius); padding: 4px; font-size: 12px; background: var(--amber-light); color: var(--amber); }
+.diff-pos { color: var(--green); font-weight: 600; }
+.diff-neg { color: var(--red); font-weight: 600; }
+.diff-zero { color: var(--text3); }
+.edit-who { font-size: 11px; color: var(--text3); }
+.del-btn { padding: 2px 6px; font-size: 11px; border: 0.5px solid var(--border); border-radius: var(--radius); cursor: pointer; background: var(--bg); color: var(--red); }
+.add-row-btn { width: 100%; padding: 6px; font-size: 12px; border: none; background: var(--amber-light); color: var(--amber); cursor: pointer; border-top: 0.5px solid var(--border); }
+
+.footer-row { display: flex; justify-content: space-between; align-items: center; gap: 8px; flex-wrap: wrap; }
+
+/* admin badge */
+.adm-badge { font-size: 11px; padding: 2px 7px; border-radius: 20px; background: var(--amber-light); color: var(--amber); }
+
+/* modals */
+.overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.4); display: flex; align-items: center; justify-content: center; z-index: 200; }
+.modal { background: var(--bg); border-radius: var(--radius-lg); padding: 1.5rem; width: 320px; border: 0.5px solid var(--border); box-shadow: 0 8px 32px rgba(0,0,0,0.15); }
+.modal h3 { font-size: 15px; font-weight: 600; margin-bottom: .8rem; }
+.modal p { font-size: 12px; color: var(--text2); margin-bottom: 12px; line-height: 1.6; }
+.modal input { width: 100%; border: 0.5px solid var(--border); border-radius: var(--radius); padding: 9px 10px; font-size: 14px; background: var(--bg); color: var(--text); margin-bottom: 10px; }
+.modal input:focus { outline: none; box-shadow: 0 0 0 2px rgba(83,74,183,0.25); border-color: var(--purple); }
+.modal-btns { display: flex; gap: 8px; justify-content: flex-end; }
+.modal-btns button { padding: 7px 16px; border-radius: var(--radius); font-size: 13px; cursor: pointer; border: 0.5px solid var(--border); background: var(--bg); color: var(--text); }
+.modal-btns .confirm { background: var(--purple); color: #fff; border-color: var(--purple); }
+.modal-err { font-size: 12px; color: var(--red); margin-bottom: 8px; }
+</style>
+</head>
+<body>
+<div class="app">
+
+  <!-- Top bar -->
+  <div class="top-bar">
+    <div class="title">
+      SCENTORY 물품 입출고
+      <span class="adm-badge" id="adm-badge" style="display:none">관리자 모드</span>
+    </div>
+    <div class="top-right">
+      <div class="stage-tabs">
+        <button class="tab active" onclick="setStage(0)">입고 확인</button>
+        <button class="tab" onclick="setStage(1)">1학교→2학교</button>
+        <button class="tab" onclick="setStage(2)">2학교→3학교</button>
+        <button class="tab" onclick="setStage(3)">3학교 종료</button>
+      </div>
+      <button class="btn" id="adm-btn" onclick="toggleAdmin()">⚙ 관리자</button>
+    </div>
+  </div>
+
+  <!-- Drive status -->
+  <div class="drive-bar" id="drive-bar">
+    <span class="drive-dot" id="drive-dot"></span>
+    <span id="drive-label">Google 로그인 필요</span>
+    <span class="spacer"></span>
+    <span class="who" id="drive-who" style="display:none"></span>
+    <span class="time" id="drive-time"></span>
+  </div>
+
+  <!-- Google sign-in (shown when not signed in) -->
+  <div class="signin-block" id="signin-block">
+    <p>Google Drive에 연결하면 수정 내용이 자동 저장되고<br>다른 사람과 실시간으로 공유됩니다.</p>
+    <button class="google-btn" onclick="signIn()">
+      <svg width="18" height="18" viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/><path fill="none" d="M0 0h48v48H0z"/></svg>
+      Google 계정으로 로그인
+    </button>
+  </div>
+
+  <!-- Main content -->
+  <div id="main-content" style="display:none">
+    <div class="summary-grid" id="summary"></div>
+    <div class="info-bar" id="info-bar"></div>
+    <div class="table-wrap">
+      <table>
+        <thead id="thead"></thead>
+        <tbody id="tbody"></tbody>
+      </table>
+    </div>
+    <div class="footer-row">
+      <button class="btn primary" onclick="exportCSV()">↓ CSV 내보내기</button>
+      <button class="btn" id="reset-btn" style="display:none;color:var(--red)" onclick="confirmReset()">✕ 데이터 초기화</button>
+    </div>
+  </div>
+
+</div>
+
+<!-- Admin password modal -->
+<div class="overlay" id="modal-pw" style="display:none">
+  <div class="modal">
+    <h3>🔒 관리자 코드 입력</h3>
+    <input type="password" id="pw-input" placeholder="관리자 코드" onkeydown="if(event.key==='Enter')checkPw()">
+    <div class="modal-err" id="pw-err" style="display:none">코드가 올바르지 않아요</div>
+    <div class="modal-btns">
+      <button onclick="closePwModal()">취소</button>
+      <button class="confirm" onclick="checkPw()">확인</button>
+    </div>
+  </div>
+</div>
+
+<!-- Google API -->
+<script src="https://apis.google.com/js/api.js"></script>
+<script src="https://accounts.google.com/gsi/client"></script>
+
+<script>
+/* ============================================================
+   CONFIG — Google OAuth (공개 앱용 client ID)
+   드라이브에 scentory_data.json 파일을 생성/수정합니다.
+   처음 실행 시 파일이 없으면 자동 생성됩니다.
+   ============================================================ */
+const CLIENT_ID = 'YOUR_GOOGLE_CLIENT_ID'; // ← 아래 설정 방법 참조
+const API_KEY   = 'YOUR_GOOGLE_API_KEY';   // ← 아래 설정 방법 참조
+const SCOPES    = 'https://www.googleapis.com/auth/drive.appdata https://www.googleapis.com/auth/drive.file';
+const FILE_NAME = 'scentory_inventory_data.json';
+const ADMIN_CODE = '2026';
+
+let tokenClient;
+let gapiInited = false;
+let gisInited  = false;
+let accessToken = null;
+let driveFileId = null;
+let isAdmin = false;
+let stage = 0;
+let saveTimer = null;
+let pollTimer = null;
+let lastSavedHash = '';
+let currentUser = '';
+
+/* ─── default data ─── */
+const DEFAULT_GROUPS = [
+  { group: "Step 1 · 향 추천", items: [
+    { name: "QR코드 출력물", scent: null, total: 3 },
+    { name: "시향 도구 (천)", scent: null, total: 9 },
+  ]},
+  { group: "Step 1 · 미니캡슐세제 샘플 증정", items: [
+    { name: "미니캡슐세제", scent: "썸머", total: 700 },
+    { name: "미니캡슐세제", scent: "그리너리", total: 650 },
+    { name: "미니캡슐세제", scent: "플로럴", total: 650 },
+  ]},
+  { group: "Step 2 · 시향+엽서", items: [
+    { name: "엽서", scent: null, total: 1800 },
+    { name: "펜", scent: null, total: 24 },
+    { name: "집게", scent: null, total: 150 },
+    { name: "트와인끈", scent: null, total: 1 },
+  ]},
+  { group: "Step 3 · 럭키드로우", items: [
+    { name: "아크릴볼", scent: null, total: 2100 },
+  ]},
+  { group: "Step 3 · 1등", items: [
+    { name: "섬유향수 300ml", scent: "썸머", total: 4 },
+    { name: "섬유향수 300ml", scent: "그리너리", total: 3 },
+    { name: "섬유향수 300ml", scent: "플로럴", total: 3 },
+  ]},
+  { group: "Step 3 · 2등", items: [
+    { name: "섬유향수 90ml", scent: "썸머", total: 39 },
+    { name: "섬유향수 90ml", scent: "그리너리", total: 39 },
+    { name: "섬유향수 90ml", scent: "플로럴", total: 39 },
+  ]},
+  { group: "Step 3 · 3등", items: [
+    { name: "캡슐세제 세트 2개입", scent: "그리너리", total: 700 },
+    { name: "캡슐세제 세트 2개입", scent: "플로럴", total: 400 },
+  ]},
+  { group: "기타", items: [
+    { name: "버블건", scent: null, total: 3 },
+    { name: "스티커", scent: null, total: 255 },
+    { name: "미니 지퍼백", scent: null, total: 2100 },
+  ]},
+];
+
+const SCENT_CLASS = { "썸머": "sc-s", "그리너리": "sc-g", "플로럴": "sc-f" };
+const STAGE_INFO = [
+  "첫날 물품 도착 후 기준 수량과 비교해 입고 확인 수량을 입력하세요.",
+  "서울시립대 종료 후 다음 학교로 이관할 수량을 입력하세요.",
+  "한양대 종료 후 상명대로 이관할 수량을 입력하세요.",
+  "상명대 행사 종료 후 최종 잔여 수량을 입력하세요.",
+];
+const STAGES = [
+  { inCol: "기준 수량",    outCol: "입고 확인", diffLabel: "차이"       },
+  { inCol: "이관 전 재고", outCol: "이관 수량", diffLabel: "1학교 사용" },
+  { inCol: "이관 전 재고", outCol: "이관 수량", diffLabel: "2학교 사용" },
+  { inCol: "이관받은 재고",outCol: "최종 잔여", diffLabel: "3학교 사용" },
+];
+
+let GROUPS   = JSON.parse(JSON.stringify(DEFAULT_GROUPS));
+let vals     = [];
+let editedBy = [];
+
+function flatItems() {
+  const a = [];
+  GROUPS.forEach(g => g.items.forEach(it => a.push(it)));
+  return a;
+}
+
+function initVals() {
+  const n = flatItems().length;
+  vals     = Array.from({length: n}, () => [null,null,null,null]);
+  editedBy = Array.from({length: n}, () => ['','','','']);
+}
+initVals();
+
+function makeHash(d) {
+  const s = JSON.stringify(d);
+  let h = 0;
+  for (let i = 0; i < s.length; i++) h = ((h << 5) - h) + s.charCodeAt(i) | 0;
+  return h.toString(36);
+}
+
+/* ─── Google Auth & API init ─── */
+function gapiLoaded() {
+  gapi.load('client', async () => {
+    await gapi.client.init({ apiKey: API_KEY, discoveryDocs: ['https://www.googleapis.com/discovery/v1/apis/drive/v3/rest'] });
+    gapiInited = true;
+    maybeEnableSignIn();
+  });
+}
+
+function gisLoaded() {
+  tokenClient = google.accounts.oauth2.initTokenClient({
+    client_id: CLIENT_ID,
+    scope: SCOPES,
+    callback: async (resp) => {
+      if (resp.error) { setDriveStatus('error', '인증 오류'); return; }
+      accessToken = resp.access_token;
+      gapi.client.setToken({ access_token: accessToken });
+      currentUser = await getUserEmail();
+      onSignedIn();
+    }
+  });
+  gisInited = true;
+  maybeEnableSignIn();
+}
+
+function maybeEnableSignIn() {
+  if (gapiInited && gisInited) {
+    // nothing needed; sign-in button is always visible
+  }
+}
+
+function signIn() {
+  tokenClient.requestAccessToken({ prompt: 'consent' });
+}
+
+async function getUserEmail() {
+  try {
+    const r = await gapi.client.request({ path: 'https://www.googleapis.com/oauth2/v2/userinfo' });
+    return r.result.email || '(알 수 없음)';
+  } catch { return '(알 수 없음)'; }
+}
+
+async function onSignedIn() {
+  document.getElementById('signin-block').style.display = 'none';
+  document.getElementById('main-content').style.display = 'block';
+  setDriveStatus('saving', '데이터 불러오는 중...');
+  document.getElementById('drive-who').textContent = currentUser;
+  document.getElementById('drive-who').style.display = 'inline';
+  await findOrCreateFile();
+  await loadFromDrive();
+  startPolling();
+}
+
+/* ─── Drive file ops ─── */
+async function findOrCreateFile() {
+  // search in appDataFolder first, then root
+  try {
+    const r = await gapi.client.drive.files.list({
+      q: `name='${FILE_NAME}' and trashed=false`,
+      spaces: 'drive',
+      fields: 'files(id,name)',
+    });
+    if (r.result.files && r.result.files.length > 0) {
+      driveFileId = r.result.files[0].id;
+      return;
+    }
+  } catch(e) {}
+  // create
+  await createDriveFile();
+}
+
+async function createDriveFile() {
+  const meta = { name: FILE_NAME, mimeType: 'application/json' };
+  const body = buildSavePayload();
+  const r = await gapi.client.request({
+    path: 'https://www.googleapis.com/upload/drive/v3/files',
+    method: 'POST',
+    params: { uploadType: 'multipart', fields: 'id' },
+    headers: { 'Content-Type': 'multipart/related; boundary=boundary123' },
+    body: [
+      '--boundary123',
+      'Content-Type: application/json; charset=UTF-8',
+      '',
+      JSON.stringify(meta),
+      '--boundary123',
+      'Content-Type: application/json',
+      '',
+      JSON.stringify(body),
+      '--boundary123--'
+    ].join('\r\n')
+  });
+  driveFileId = r.result.id;
+}
+
+function buildSavePayload() {
+  return { groups: GROUPS, vals, editedBy, savedAt: Date.now(), savedBy: currentUser };
+}
+
+async function loadFromDrive() {
+  if (!driveFileId) return;
+  try {
+    const r = await gapi.client.drive.files.get({ fileId: driveFileId, alt: 'media' });
+    const data = typeof r.result === 'string' ? JSON.parse(r.result) : r.result;
+    applyRemoteData(data);
+    lastSavedHash = makeHash({ groups: GROUPS, vals });
+    setDriveStatus('ok', '동기화 완료');
+    updateTime(data.savedAt);
+    render();
+  } catch(e) {
+    setDriveStatus('error', '불러오기 실패');
+    render();
+  }
+}
+
+function applyRemoteData(data) {
+  if (!data) return;
+  if (data.groups) GROUPS = data.groups;
+  const n = flatItems().length;
+  if (data.vals) {
+    vals = data.vals.slice(0, n);
+    while (vals.length < n) vals.push([null,null,null,null]);
+  }
+  if (data.editedBy) {
+    editedBy = data.editedBy.slice(0, n);
+    while (editedBy.length < n) editedBy.push(['','','','']);
+  }
+}
+
+async function saveToDrive(idxUpdated, stageUpdated) {
+  if (!driveFileId) return;
+  setDriveStatus('saving', '저장 중...');
+  if (idxUpdated !== undefined) editedBy[idxUpdated][stageUpdated] = currentUser;
+  const payload = buildSavePayload();
+  try {
+    await gapi.client.request({
+      path: `https://www.googleapis.com/upload/drive/v3/files/${driveFileId}`,
+      method: 'PATCH',
+      params: { uploadType: 'media' },
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+    lastSavedHash = makeHash({ groups: GROUPS, vals });
+    setDriveStatus('ok', '저장됨');
+    updateTime(Date.now());
+  } catch(e) {
+    setDriveStatus('error', '저장 실패 — 재시도 중');
+    setTimeout(() => saveToDrive(), 3000);
+  }
+}
+
+function scheduleSave(idx, s) {
+  clearTimeout(saveTimer);
+  saveTimer = setTimeout(() => saveToDrive(idx, s), 900);
+}
+
+function startPolling() {
+  pollTimer = setInterval(async () => {
+    if (!driveFileId || !accessToken) return;
+    try {
+      const r = await gapi.client.drive.files.get({ fileId: driveFileId, fields: 'modifiedTime' });
+      // simple: just reload every 10s if not currently saving
+      const remote = r.result.modifiedTime;
+      if (!document.getElementById('drive-dot').classList.contains('saving')) {
+        await loadFromDrive();
+      }
+    } catch {}
+  }, 10000);
+}
+
+/* ─── UI helpers ─── */
+function setDriveStatus(state, label) {
+  const dot = document.getElementById('drive-dot');
+  dot.className = 'drive-dot' + (state === 'saving' ? ' saving' : state === 'ok' ? ' ok' : state === 'error' ? ' error' : '');
+  document.getElementById('drive-label').textContent = label;
+}
+
+function updateTime(ts) {
+  if (!ts) return;
+  const d = new Date(ts);
+  const pad = n => String(n).padStart(2,'0');
+  document.getElementById('drive-time').textContent =
+    `${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())} 저장`;
+}
+
+/* ─── App logic ─── */
+function setStage(s) {
+  stage = s;
+  document.querySelectorAll('.tab').forEach((t, i) => t.classList.toggle('active', i === s));
+  render();
+}
+
+function toggleAdmin() {
+  if (isAdmin) {
+    isAdmin = false;
+    document.getElementById('adm-btn').classList.remove('admin-on');
+    document.getElementById('adm-badge').style.display = 'none';
+    document.getElementById('reset-btn').style.display = 'none';
+    render();
+  } else {
+    document.getElementById('modal-pw').style.display = 'flex';
+    setTimeout(() => document.getElementById('pw-input').focus(), 50);
+  }
+}
+
+function checkPw() {
+  if (document.getElementById('pw-input').value === ADMIN_CODE) {
+    isAdmin = true;
+    closePwModal();
+    document.getElementById('adm-btn').classList.add('admin-on');
+    document.getElementById('adm-badge').style.display = 'inline';
+    document.getElementById('reset-btn').style.display = 'inline-flex';
+    render();
+  } else {
+    document.getElementById('pw-err').style.display = 'block';
+    document.getElementById('pw-input').value = '';
+  }
+}
+
+function closePwModal() {
+  document.getElementById('modal-pw').style.display = 'none';
+  document.getElementById('pw-input').value = '';
+  document.getElementById('pw-err').style.display = 'none';
+}
+
+function getInVal(i) {
+  if (stage === 0) return flatItems()[i].total;
+  return vals[i][stage - 1] !== null ? vals[i][stage - 1] : 0;
+}
+
+function render() {
+  document.getElementById('info-bar').textContent = STAGE_INFO[stage];
+  const st = STAGES[stage];
+  document.getElementById('thead').innerHTML = `<tr>
+    <th>물품명</th>
+    <th style="width:82px">${st.inCol}</th>
+    <th style="width:82px">${st.outCol}</th>
+    <th style="width:74px">${st.diffLabel}</th>
+    <th style="width:80px">최근 편집</th>
+    ${isAdmin ? '<th style="width:40px"></th>' : ''}
+  </tr>`;
+
+  const tbody = document.getElementById('tbody');
+  tbody.innerHTML = '';
+  let fi = 0;
+
+  GROUPS.forEach((group, gi) => {
+    const ghTr = document.createElement('tr');
+    ghTr.className = 'group-hdr' + (isAdmin ? ' adm' : '');
+    ghTr.innerHTML = `<td colspan="${isAdmin ? 6 : 5}">${group.group}</td>`;
+    tbody.appendChild(ghTr);
+
+    group.items.forEach((item, ii) => {
+      const i = fi++;
+      const inVal  = getInVal(i);
+      const outVal = vals[i][stage];
+      const diff   = outVal !== null ? outVal - inVal : null;
+      const dCls   = diff === null ? '' : diff > 0 ? 'diff-pos' : diff < 0 ? 'diff-neg' : 'diff-zero';
+      const dTxt   = diff === null ? '-' : (diff > 0 ? '+' + diff : String(diff));
+      const badge  = item.scent ? `<span class="scent-badge ${SCENT_CLASS[item.scent]||''}">${item.scent}</span>` : '';
+      const who    = (editedBy[i] && editedBy[i][stage]) ? editedBy[i][stage].split('@')[0] : '-';
+
+      const row = document.createElement('tr');
+      if (isAdmin) {
+        row.innerHTML = `
+          <td>
+            <input class="adm-name" value="${item.name}" onchange="updateName(${gi},${ii},this.value)">
+            <input class="adm-scent" value="${item.scent||''}" placeholder="향" onchange="updateScent(${gi},${ii},this.value)">
+          </td>
+          <td><input class="adm-input" type="number" min="0" value="${item.total}" onchange="updateTotal(${gi},${ii},this.value)"></td>
+          <td><input class="num-input" type="number" min="0" value="${outVal!==null?outVal:''}" placeholder="-" data-idx="${i}" oninput="updateVal(this)"></td>
+          <td class="${dCls}" id="diff-${i}">${dTxt}</td>
+          <td class="edit-who" id="who-${i}">${who}</td>
+          <td><button class="del-btn" onclick="deleteItem(${gi},${ii})">✕</button></td>`;
+      } else {
+        row.innerHTML = `
+          <td><span style="font-weight:500">${item.name}</span>${badge}</td>
+          <td>${inVal}</td>
+          <td><input class="num-input" type="number" min="0" value="${outVal!==null?outVal:''}" placeholder="-" data-idx="${i}" oninput="updateVal(this)"></td>
+          <td class="${dCls}" id="diff-${i}">${dTxt}</td>
+          <td class="edit-who" id="who-${i}">${who}</td>`;
+      }
+      tbody.appendChild(row);
+    });
+
+    if (isAdmin) {
+      const addTr = document.createElement('tr');
+      addTr.innerHTML = `<td colspan="6" style="padding:0"><button class="add-row-btn" onclick="addItem(${gi})">+ 항목 추가</button></td>`;
+      tbody.appendChild(addTr);
+    }
+  });
+  renderSummary();
+}
+
+function updateVal(el) {
+  const i = parseInt(el.dataset.idx);
+  vals[i][stage] = el.value === '' ? null : parseInt(el.value);
+  const diff = vals[i][stage] !== null ? vals[i][stage] - getInVal(i) : null;
+  const td = document.getElementById('diff-' + i);
+  td.className = diff === null ? '' : diff > 0 ? 'diff-pos' : diff < 0 ? 'diff-neg' : 'diff-zero';
+  td.textContent = diff === null ? '-' : (diff > 0 ? '+' + diff : String(diff));
+  const whoEl = document.getElementById('who-' + i);
+  if (whoEl) whoEl.textContent = currentUser.split('@')[0] || '-';
+  renderSummary();
+  scheduleSave(i, stage);
+}
+
+function updateName(gi, ii, v)  { GROUPS[gi].items[ii].name = v; scheduleSave(); }
+function updateScent(gi, ii, v) { GROUPS[gi].items[ii].scent = v || null; scheduleSave(); }
+function updateTotal(gi, ii, v) { GROUPS[gi].items[ii].total = parseInt(v)||0; rebuildVals(); render(); scheduleSave(); }
+function deleteItem(gi, ii)     { GROUPS[gi].items.splice(ii,1); rebuildVals(); render(); saveToDrive(); }
+function addItem(gi)            { GROUPS[gi].items.push({name:'새 항목',scent:null,total:0}); rebuildVals(); render(); saveToDrive(); }
+
+function rebuildVals() {
+  const fl = flatItems();
+  vals     = fl.map((_,i) => vals[i]     || [null,null,null,null]);
+  editedBy = fl.map((_,i) => editedBy[i] || ['','','','']);
+}
+
+function renderSummary() {
+  const fl    = flatItems();
+  const filled = vals.filter(v => v[stage] !== null).length;
+  const anomaly = vals.filter((v,i) => {
+    if (v[stage]===null) return false;
+    return stage===0 ? v[stage]!==getInVal(i) : v[stage]>getInVal(i);
+  }).length;
+  const editors = [...new Set(editedBy.map(e=>e[stage]).filter(Boolean).map(e=>e.split('@')[0]))];
+  document.getElementById('summary').innerHTML = `
+    <div class="stat-card">
+      <div class="stat-label">입력 완료</div>
+      <div class="stat-val">${filled} / ${fl.length}</div>
+      <div class="stat-sub">항목</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">수량 이상</div>
+      <div class="stat-val ${anomaly>0?'warn':'ok'}">${anomaly}</div>
+      <div class="stat-sub">${stage===0?'기준 불일치':'초과 항목'}</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">편집자</div>
+      <div class="stat-val" style="font-size:12px;padding-top:5px">${editors.length?editors.slice(0,3).join(', '):'-'}</div>
+      <div class="stat-sub">이번 단계</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">현재 단계</div>
+      <div class="stat-val" style="font-size:12px;padding-top:5px">${['입고 확인','1→2학교','2→3학교','3학교 종료'][stage]}</div>
+    </div>`;
+}
+
+function exportCSV() {
+  const st = STAGES[stage];
+  const fl = flatItems();
+  let csv = `물품명,향,${st.inCol},${st.outCol},${st.diffLabel},최근편집자\n`;
+  fl.forEach((item,i) => {
+    const inVal  = getInVal(i);
+    const outVal = vals[i][stage]!==null ? vals[i][stage] : '';
+    const diff   = outVal!=='' ? outVal-inVal : '';
+    const who    = (editedBy[i]&&editedBy[i][stage])||'';
+    csv += `"${item.name}","${item.scent||''}",${inVal},${outVal},${diff},"${who}"\n`;
+  });
+  const blob = new Blob(['\uFEFF'+csv],{type:'text/csv;charset=utf-8;'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = `SCENTORY_${['입고','1학교','2학교','3학교'][stage]}.csv`;
+  a.click();
+}
+
+async function confirmReset() {
+  if (!confirm('공유 데이터를 모두 초기화할까요?\n입력된 수량이 전부 삭제됩니다.')) return;
+  GROUPS   = JSON.parse(JSON.stringify(DEFAULT_GROUPS));
+  initVals();
+  await saveToDrive();
+  render();
+}
+
+/* ─── Load GAPI & GIS ─── */
+window.gapiLoaded = gapiLoaded;
+window.gisLoaded  = gisLoaded;
+renderSummary();
+</script>
+
+<!-- Load Google APIs async -->
+<script async defer src="https://apis.google.com/js/api.js?onload=gapiLoaded"></script>
+<script async defer src="https://accounts.google.com/gsi/client" onload="gisLoaded()"></script>
+
+</body>
+</html>
