@@ -51,6 +51,7 @@
     @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.3} }
     .sync-bar .spacer { flex: 1; }
     .sync-bar .time { color: var(--text3); font-size: 11px; }
+    .user-chip { font-size: 11px; padding: 2px 8px; border-radius: 20px; background: var(--purple-light); color: var(--purple-dark); cursor: pointer; }
     .summary-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 8px; margin-bottom: 1.2rem; }
     .stat-card { background: var(--bg2); border-radius: var(--radius); padding: 10px 12px; }
     .stat-label { font-size: 11px; color: var(--text3); margin-bottom: 4px; }
@@ -60,7 +61,7 @@
     .stat-val.warn { color: var(--red); }
     .info-bar { font-size: 12px; color: var(--text3); padding: 7px 12px; background: var(--bg2); border-radius: var(--radius); margin-bottom: 1rem; }
     .table-wrap { border: 0.5px solid var(--border); border-radius: var(--radius-lg); overflow: hidden; margin-bottom: 1.2rem; overflow-x: auto; }
-    table { width: 100%; border-collapse: collapse; font-size: 13px; min-width: 460px; }
+    table { width: 100%; border-collapse: collapse; font-size: 13px; min-width: 500px; }
     th { background: var(--purple); color: #fff; font-weight: 500; padding: 9px 8px; text-align: center; font-size: 12px; }
     th:first-child { text-align: left; }
     td { padding: 7px 8px; border-top: 0.5px solid var(--border); text-align: center; vertical-align: middle; }
@@ -76,23 +77,28 @@
     .num-input:focus { outline: none; box-shadow: 0 0 0 2px rgba(83,74,183,0.25); border-color: var(--purple); }
     .adm-input { width: 72px; border: 0.5px solid var(--amber); border-radius: var(--radius); padding: 4px; text-align: center; font-size: 12px; background: var(--amber-light); color: var(--amber); font-family: inherit; }
     .adm-name  { width: 120px; border: 0.5px solid var(--amber); border-radius: var(--radius); padding: 4px; font-size: 12px; background: var(--amber-light); color: var(--amber); font-family: inherit; }
-    .adm-scent { width: 60px;  border: 0.5px solid var(--amber); border-radius: var(--radius); padding: 4px; font-size: 12px; background: var(--amber-light); color: var(--amber); font-family: inherit; }
+    .adm-scent { width: 60px; border: 0.5px solid var(--amber); border-radius: var(--radius); padding: 4px; font-size: 12px; background: var(--amber-light); color: var(--amber); font-family: inherit; }
     .diff-pos { color: var(--green); font-weight: 600; }
-    .diff-neg { color: var(--red);   font-weight: 600; }
+    .diff-neg { color: var(--red); font-weight: 600; }
     .diff-zero { color: var(--text3); }
+    .edit-who { font-size: 11px; color: var(--text3); }
     .del-btn { padding: 2px 6px; font-size: 11px; border: 0.5px solid var(--border); border-radius: var(--radius); cursor: pointer; background: var(--bg); color: var(--red); font-family: inherit; }
     .add-row-btn { width: 100%; padding: 6px; font-size: 12px; border: none; background: var(--amber-light); color: var(--amber); cursor: pointer; border-top: 0.5px solid var(--border); font-family: inherit; }
     .footer-row { display: flex; justify-content: space-between; align-items: center; gap: 8px; flex-wrap: wrap; }
     .adm-badge { font-size: 11px; padding: 2px 7px; border-radius: 20px; background: var(--amber-light); color: var(--amber); }
-    .overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.4); display: flex; align-items: center; justify-content: center; z-index: 200; }
-    .modal { background: var(--bg); border-radius: var(--radius-lg); padding: 1.5rem; width: 300px; border: 0.5px solid var(--border); box-shadow: 0 8px 32px rgba(0,0,0,0.15); }
-    .modal h3 { font-size: 15px; font-weight: 600; margin-bottom: .8rem; }
-    .modal input { width: 100%; border: 0.5px solid var(--border); border-radius: var(--radius); padding: 9px 10px; font-size: 14px; background: var(--bg); color: var(--text); margin-bottom: 10px; font-family: inherit; }
+
+    /* 모달 공통 */
+    .overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.45); display: flex; align-items: center; justify-content: center; z-index: 200; }
+    .modal { background: var(--bg); border-radius: var(--radius-lg); padding: 1.8rem; width: 300px; border: 0.5px solid var(--border); box-shadow: 0 8px 32px rgba(0,0,0,0.18); }
+    .modal h3 { font-size: 16px; font-weight: 600; margin-bottom: .5rem; }
+    .modal p  { font-size: 12px; color: var(--text2); margin-bottom: 14px; line-height: 1.6; }
+    .modal input { width: 100%; border: 0.5px solid var(--border); border-radius: var(--radius); padding: 10px; font-size: 15px; background: var(--bg); color: var(--text); margin-bottom: 10px; font-family: inherit; }
     .modal input:focus { outline: none; box-shadow: 0 0 0 2px rgba(83,74,183,0.25); border-color: var(--purple); }
     .modal-btns { display: flex; gap: 8px; justify-content: flex-end; }
-    .modal-btns button { padding: 7px 16px; border-radius: var(--radius); font-size: 13px; cursor: pointer; border: 0.5px solid var(--border); background: var(--bg); color: var(--text); font-family: inherit; }
+    .modal-btns button { padding: 8px 18px; border-radius: var(--radius); font-size: 13px; cursor: pointer; border: 0.5px solid var(--border); background: var(--bg); color: var(--text); font-family: inherit; }
     .modal-btns .confirm { background: var(--purple); color: #fff; border-color: var(--purple); }
     .modal-err { font-size: 12px; color: var(--red); margin-bottom: 8px; }
+
     .loading { text-align: center; padding: 3rem 1rem; color: var(--text3); font-size: 13px; }
     .spinner { width: 24px; height: 24px; border: 2px solid var(--border); border-top-color: var(--purple); border-radius: 50%; animation: spin 0.7s linear infinite; margin: 0 auto 12px; }
     @keyframes spin { to { transform: rotate(360deg); } }
@@ -120,6 +126,7 @@
     <span class="sync-dot" id="sync-dot"></span>
     <span id="sync-label">연결 중...</span>
     <span class="spacer"></span>
+    <span class="user-chip" id="user-chip" onclick="changeName()" title="이름 변경"></span>
     <span class="time" id="sync-time"></span>
   </div>
 
@@ -141,6 +148,20 @@
   </div>
 </div>
 
+<!-- 이름 입력 모달 (첫 접속 / 이름 변경) -->
+<div class="overlay" id="modal-name">
+  <div class="modal">
+    <h3>👋 안녕하세요!</h3>
+    <p>수정 내역에 표시될 이름을 입력해주세요.</p>
+    <input type="text" id="name-input" placeholder="예: 희윤" maxlength="10" onkeydown="if(event.key==='Enter')confirmName()">
+    <div class="modal-err" id="name-err" style="display:none">이름을 입력해주세요</div>
+    <div class="modal-btns">
+      <button class="confirm" onclick="confirmName()">시작하기</button>
+    </div>
+  </div>
+</div>
+
+<!-- 관리자 비밀번호 모달 -->
 <div class="overlay" id="modal-pw" style="display:none">
   <div class="modal">
     <h3>🔒 관리자 코드 입력</h3>
@@ -154,10 +175,9 @@
 </div>
 
 <script type="module">
-import { initializeApp }                          from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-import { getDatabase, ref, onValue, set }         from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
+import { initializeApp }                  from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getDatabase, ref, onValue, set } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
 
-/* ── Firebase 설정 ── */
 const firebaseConfig = {
   databaseURL: "https://scentory-inventory-default-rtdb.firebaseio.com"
 };
@@ -167,40 +187,40 @@ const ROOT = ref(db, 'inventory');
 /* ── 기본 물품 데이터 ── */
 const DEFAULT_GROUPS = [
   { group: "Step 1 · 향 추천", items: [
-      { name: "QR코드 출력물",  scent: null,    total: 3   },
-      { name: "시향 도구 (천)", scent: null,    total: 9   },
+      { name: "QR코드 출력물",  scent: null, total: 3   },
+      { name: "시향 도구 (천)", scent: null, total: 9   },
   ]},
   { group: "Step 1 · 미니캡슐세제 샘플", items: [
-      { name: "미니캡슐세제", scent: "썸머",   total: 700 },
-      { name: "미니캡슐세제", scent: "그리너리",total: 650 },
-      { name: "미니캡슐세제", scent: "플로럴", total: 650 },
+      { name: "미니캡슐세제", scent: "썸머",    total: 700 },
+      { name: "미니캡슐세제", scent: "그리너리", total: 650 },
+      { name: "미니캡슐세제", scent: "플로럴",  total: 650 },
   ]},
   { group: "Step 2 · 시향+엽서", items: [
-      { name: "엽서",     scent: null, total: 1800 },
-      { name: "펜",       scent: null, total: 24   },
-      { name: "집게",     scent: null, total: 150  },
-      { name: "트와인끈", scent: null, total: 1    },
+      { name: "엽서",      scent: null, total: 1800 },
+      { name: "펜",        scent: null, total: 24   },
+      { name: "집게",      scent: null, total: 150  },
+      { name: "트와인끈",  scent: null, total: 1    },
   ]},
   { group: "Step 3 · 럭키드로우", items: [
       { name: "아크릴볼", scent: null, total: 2100 },
   ]},
   { group: "Step 3 · 1등", items: [
-      { name: "섬유향수 300ml", scent: "썸머",   total: 4 },
-      { name: "섬유향수 300ml", scent: "그리너리",total: 3 },
-      { name: "섬유향수 300ml", scent: "플로럴", total: 3 },
+      { name: "섬유향수 300ml", scent: "썸머",    total: 4 },
+      { name: "섬유향수 300ml", scent: "그리너리", total: 3 },
+      { name: "섬유향수 300ml", scent: "플로럴",  total: 3 },
   ]},
   { group: "Step 3 · 2등", items: [
-      { name: "섬유향수 90ml", scent: "썸머",   total: 39 },
-      { name: "섬유향수 90ml", scent: "그리너리",total: 39 },
-      { name: "섬유향수 90ml", scent: "플로럴", total: 39 },
+      { name: "섬유향수 90ml", scent: "썸머",    total: 39 },
+      { name: "섬유향수 90ml", scent: "그리너리", total: 39 },
+      { name: "섬유향수 90ml", scent: "플로럴",  total: 39 },
   ]},
   { group: "Step 3 · 3등", items: [
-      { name: "캡슐세제 세트 2개입", scent: "그리너리",total: 700 },
-      { name: "캡슐세제 세트 2개입", scent: "플로럴", total: 400 },
+      { name: "캡슐세제 세트 2개입", scent: "그리너리", total: 700 },
+      { name: "캡슐세제 세트 2개입", scent: "플로럴",  total: 400 },
   ]},
   { group: "기타", items: [
-      { name: "버블건",    scent: null, total: 3    },
-      { name: "스티커",   scent: null, total: 255  },
+      { name: "버블건",     scent: null, total: 3    },
+      { name: "스티커",    scent: null, total: 255  },
       { name: "미니 지퍼백",scent: null, total: 2100 },
   ]},
 ];
@@ -213,37 +233,41 @@ const STAGE_INFO  = [
   "상명대 행사 종료 후 최종 잔여 수량을 입력하세요.",
 ];
 const STAGES = [
-  { inCol:"기준 수량",    outCol:"입고 확인", diffLabel:"차이"       },
-  { inCol:"이관 전 재고", outCol:"이관 수량", diffLabel:"1학교 사용" },
-  { inCol:"이관 전 재고", outCol:"이관 수량", diffLabel:"2학교 사용" },
-  { inCol:"이관받은 재고",outCol:"최종 잔여", diffLabel:"3학교 사용" },
+  { inCol:"기준 수량",     outCol:"입고 확인", diffLabel:"차이"       },
+  { inCol:"이관 전 재고",  outCol:"이관 수량", diffLabel:"1학교 사용" },
+  { inCol:"이관 전 재고",  outCol:"이관 수량", diffLabel:"2학교 사용" },
+  { inCol:"이관받은 재고", outCol:"최종 잔여", diffLabel:"3학교 사용" },
 ];
 const ADMIN_CODE = '2026';
 
-let GROUPS   = JSON.parse(JSON.stringify(DEFAULT_GROUPS));
-let vals     = [];
-let stage    = 0;
-let isAdmin  = false;
-let saveTimer= null;
-let isSaving = false;
-let ignoreNext = false; // 내가 저장한 직후 onValue 무시
+let GROUPS    = JSON.parse(JSON.stringify(DEFAULT_GROUPS));
+let vals      = [];
+let editedBy  = []; // editedBy[i][stage] = "이름"
+let stage     = 0;
+let isAdmin   = false;
+let saveTimer = null;
+let isSaving  = false;
+let ignoreNext= false;
+let myName    = '';
 
 const flatItems = () => GROUPS.flatMap(g => g.items);
 
 function initVals() {
-  vals = flatItems().map(() => [null,null,null,null]);
+  const n = flatItems().length;
+  vals     = Array.from({length:n}, () => [null,null,null,null]);
+  editedBy = Array.from({length:n}, () => ['','','','']);
 }
 initVals();
 
-/* null → -1 변환 (Firebase는 null 배열 항목 제거) */
-const toSafe  = v => v === null ? -1 : v;
-const fromSafe= v => v === -1  ? null : v;
+const toSafe   = v => v === null ? -1 : v;
+const fromSafe = v => v === -1   ? null : v;
 
 function buildPayload() {
   return {
-    groups: GROUPS,
-    vals: vals.map(row => row.map(toSafe)),
-    savedAt: Date.now()
+    groups:   GROUPS,
+    vals:     vals.map(r => r.map(toSafe)),
+    editedBy: editedBy,
+    savedAt:  Date.now()
   };
 }
 
@@ -252,9 +276,13 @@ function applyData(data) {
   if (data.groups) GROUPS = data.groups;
   const n = flatItems().length;
   if (data.vals) {
-    vals = data.vals.map(row => Array.isArray(row) ? row.map(fromSafe) : [null,null,null,null]);
+    vals = data.vals.map(r => Array.isArray(r) ? r.map(fromSafe) : [null,null,null,null]);
     while (vals.length < n) vals.push([null,null,null,null]);
     vals = vals.slice(0, n);
+  }
+  if (data.editedBy) {
+    editedBy = data.editedBy.slice(0, n);
+    while (editedBy.length < n) editedBy.push(['','','','']);
   }
 }
 
@@ -262,11 +290,8 @@ function applyData(data) {
 onValue(ROOT, snap => {
   if (ignoreNext) { ignoreNext = false; return; }
   const data = snap.val();
-  if (data) {
-    applyData(data);
-  } else {
-    saveToFirebase(); // 첫 실행
-  }
+  if (data) { applyData(data); }
+  else { saveToFirebase(); }
   document.getElementById('loading-block').style.display = 'none';
   document.getElementById('main-content').style.display  = 'block';
   setSyncStatus('ok', '실시간 동기화 중');
@@ -279,8 +304,7 @@ onValue(ROOT, snap => {
 
 async function saveToFirebase() {
   if (isSaving) return;
-  isSaving = true;
-  ignoreNext = true;
+  isSaving = true; ignoreNext = true;
   setSyncStatus('saving', '저장 중...');
   try {
     await set(ROOT, buildPayload());
@@ -298,10 +322,33 @@ function scheduleSave() {
   saveTimer = setTimeout(saveToFirebase, 800);
 }
 
+/* ── 이름 처리 ── */
+function askName() {
+  document.getElementById('modal-name').style.display = 'flex';
+  setTimeout(() => document.getElementById('name-input').focus(), 50);
+}
+
+window.confirmName = () => {
+  const v = document.getElementById('name-input').value.trim();
+  if (!v) { document.getElementById('name-err').style.display = 'block'; return; }
+  myName = v;
+  localStorage.setItem('scentory_name', myName);
+  document.getElementById('modal-name').style.display = 'none';
+  document.getElementById('name-input').value = '';
+  document.getElementById('name-err').style.display = 'none';
+  document.getElementById('user-chip').textContent = '👤 ' + myName;
+};
+
+window.changeName = () => {
+  document.getElementById('name-input').value = myName;
+  document.getElementById('modal-name').style.display = 'flex';
+  setTimeout(() => document.getElementById('name-input').focus(), 50);
+};
+
 /* ── UI 헬퍼 ── */
 function setSyncStatus(state, label) {
   const dot = document.getElementById('sync-dot');
-  dot.className = 'sync-dot' + (state==='ok'?' ok':state==='saving'?' saving':state==='error'?' error':'');
+  dot.className = 'sync-dot'+(state==='ok'?' ok':state==='saving'?' saving':state==='error'?' error':'');
   document.getElementById('sync-label').textContent = label;
 }
 function updateTime(ts) {
@@ -309,9 +356,8 @@ function updateTime(ts) {
   document.getElementById('sync-time').textContent =
     `${p(d.getHours())}:${p(d.getMinutes())}:${p(d.getSeconds())} 저장`;
 }
-
 function getInVal(i) {
-  if (stage === 0) return flatItems()[i].total;
+  if (stage===0) return flatItems()[i].total;
   return vals[i]?.[stage-1] ?? 0;
 }
 
@@ -321,10 +367,11 @@ function render() {
   const st = STAGES[stage];
   document.getElementById('thead').innerHTML = `<tr>
     <th>물품명</th>
-    <th style="width:82px">${st.inCol}</th>
-    <th style="width:82px">${st.outCol}</th>
-    <th style="width:74px">${st.diffLabel}</th>
-    ${isAdmin ? '<th style="width:40px"></th>' : ''}
+    <th style="width:80px">${st.inCol}</th>
+    <th style="width:80px">${st.outCol}</th>
+    <th style="width:72px">${st.diffLabel}</th>
+    <th style="width:72px">수정자</th>
+    ${isAdmin ? '<th style="width:36px"></th>' : ''}
   </tr>`;
 
   const tbody = document.getElementById('tbody');
@@ -333,8 +380,8 @@ function render() {
 
   GROUPS.forEach((group, gi) => {
     const ghTr = document.createElement('tr');
-    ghTr.className = 'group-hdr' + (isAdmin ? ' adm' : '');
-    ghTr.innerHTML = `<td colspan="${isAdmin?5:4}">${group.group}</td>`;
+    ghTr.className = 'group-hdr'+(isAdmin?' adm':'');
+    ghTr.innerHTML = `<td colspan="${isAdmin?6:5}">${group.group}</td>`;
     tbody.appendChild(ghTr);
 
     group.items.forEach((item, ii) => {
@@ -345,31 +392,34 @@ function render() {
       const dCls   = diff===null?'':diff>0?'diff-pos':diff<0?'diff-neg':'diff-zero';
       const dTxt   = diff===null?'-':(diff>0?'+'+diff:String(diff));
       const badge  = item.scent ? `<span class="scent-badge ${SCENT_CLASS[item.scent]||''}">${item.scent}</span>` : '';
+      const who    = editedBy[i]?.[stage] || '-';
       const row    = document.createElement('tr');
 
       if (isAdmin) {
         row.innerHTML = `
           <td>
-            <input class="adm-name"  value="${item.name}"        onchange="updateName(${gi},${ii},this.value)">
-            <input class="adm-scent" value="${item.scent||''}"   placeholder="향" onchange="updateScent(${gi},${ii},this.value)">
+            <input class="adm-name"  value="${item.name}"       onchange="updateName(${gi},${ii},this.value)">
+            <input class="adm-scent" value="${item.scent||''}"  placeholder="향" onchange="updateScent(${gi},${ii},this.value)">
           </td>
           <td><input class="adm-input" type="number" min="0" value="${item.total}" onchange="updateTotal(${gi},${ii},this.value)"></td>
           <td><input class="num-input" type="number" min="0" value="${outVal!==null?outVal:''}" placeholder="-" data-idx="${i}" oninput="updateVal(this)"></td>
           <td class="${dCls}" id="diff-${i}">${dTxt}</td>
+          <td class="edit-who" id="who-${i}">${who}</td>
           <td><button class="del-btn" onclick="deleteItem(${gi},${ii})">✕</button></td>`;
       } else {
         row.innerHTML = `
           <td><span style="font-weight:500">${item.name}</span>${badge}</td>
           <td>${inVal}</td>
           <td><input class="num-input" type="number" min="0" value="${outVal!==null?outVal:''}" placeholder="-" data-idx="${i}" oninput="updateVal(this)"></td>
-          <td class="${dCls}" id="diff-${i}">${dTxt}</td>`;
+          <td class="${dCls}" id="diff-${i}">${dTxt}</td>
+          <td class="edit-who" id="who-${i}">${who}</td>`;
       }
       tbody.appendChild(row);
     });
 
     if (isAdmin) {
       const addTr = document.createElement('tr');
-      addTr.innerHTML = `<td colspan="5" style="padding:0"><button class="add-row-btn" onclick="addItem(${gi})">+ 항목 추가</button></td>`;
+      addTr.innerHTML = `<td colspan="6" style="padding:0"><button class="add-row-btn" onclick="addItem(${gi})">+ 항목 추가</button></td>`;
       tbody.appendChild(addTr);
     }
   });
@@ -379,7 +429,8 @@ function render() {
 function renderSummary() {
   const fl      = flatItems();
   const filled  = vals.filter(v => v[stage] !== null).length;
-  const anomaly = vals.filter((v,i) => v[stage]!==null && (stage===0 ? v[stage]!==getInVal(i) : v[stage]>getInVal(i))).length;
+  const anomaly = vals.filter((v,i) => v[stage]!==null && (stage===0?v[stage]!==getInVal(i):v[stage]>getInVal(i))).length;
+  const editors = [...new Set(editedBy.map(e=>e[stage]).filter(Boolean))];
   document.getElementById('summary').innerHTML = `
     <div class="stat-card">
       <div class="stat-label">입력 완료</div>
@@ -392,15 +443,20 @@ function renderSummary() {
       <div class="stat-sub">${stage===0?'기준 불일치':'초과 항목'}</div>
     </div>
     <div class="stat-card">
+      <div class="stat-label">편집자</div>
+      <div class="stat-val" style="font-size:12px;padding-top:5px">${editors.length?editors.slice(0,3).join(', '):'-'}</div>
+      <div class="stat-sub">이번 단계</div>
+    </div>
+    <div class="stat-card">
       <div class="stat-label">현재 단계</div>
       <div class="stat-val" style="font-size:12px;padding-top:5px">${['입고 확인','1→2학교','2→3학교','3학교 종료'][stage]}</div>
     </div>`;
 }
 
-/* ── 전역 함수 (onclick에서 호출) ── */
+/* ── 전역 함수 ── */
 window.setStage = s => {
   stage = s;
-  document.querySelectorAll('.tab').forEach((t,i) => t.classList.toggle('active', i===s));
+  document.querySelectorAll('.tab').forEach((t,i) => t.classList.toggle('active',i===s));
   render();
 };
 window.toggleAdmin = () => {
@@ -417,8 +473,7 @@ window.toggleAdmin = () => {
 };
 window.checkPw = () => {
   if (document.getElementById('pw-input').value === ADMIN_CODE) {
-    isAdmin = true;
-    closePwModal();
+    isAdmin = true; closePwModal();
     document.getElementById('adm-btn').classList.add('admin-on');
     document.getElementById('adm-badge').style.display = 'inline';
     document.getElementById('reset-btn').style.display = 'inline-flex';
@@ -437,33 +492,39 @@ window.updateVal = el => {
   const i = parseInt(el.dataset.idx);
   if (!vals[i]) vals[i] = [null,null,null,null];
   vals[i][stage] = el.value==='' ? null : parseInt(el.value);
+  if (!editedBy[i]) editedBy[i] = ['','','',''];
+  editedBy[i][stage] = myName;
   const diff = vals[i][stage]!==null ? vals[i][stage]-getInVal(i) : null;
   const td = document.getElementById('diff-'+i);
   if (td) {
     td.className = diff===null?'':diff>0?'diff-pos':diff<0?'diff-neg':'diff-zero';
     td.textContent = diff===null?'-':(diff>0?'+'+diff:String(diff));
   }
+  const whoEl = document.getElementById('who-'+i);
+  if (whoEl) whoEl.textContent = myName || '-';
   renderSummary();
   scheduleSave();
 };
-window.updateName  = (gi,ii,v) => { GROUPS[gi].items[ii].name  = v;            scheduleSave(); };
-window.updateScent = (gi,ii,v) => { GROUPS[gi].items[ii].scent = v||null;      scheduleSave(); };
+window.updateName  = (gi,ii,v) => { GROUPS[gi].items[ii].name  = v;             scheduleSave(); };
+window.updateScent = (gi,ii,v) => { GROUPS[gi].items[ii].scent = v||null;        scheduleSave(); };
 window.updateTotal = (gi,ii,v) => { GROUPS[gi].items[ii].total = parseInt(v)||0; render(); scheduleSave(); };
 window.deleteItem  = (gi,ii)   => { GROUPS[gi].items.splice(ii,1); rebuildVals(); render(); saveToFirebase(); };
 window.addItem     = gi        => { GROUPS[gi].items.push({name:'새 항목',scent:null,total:0}); rebuildVals(); render(); saveToFirebase(); };
 
 function rebuildVals() {
   const n = flatItems().length;
-  while (vals.length < n) vals.push([null,null,null,null]);
-  vals = vals.slice(0, n);
+  while (vals.length < n)     vals.push([null,null,null,null]);
+  while (editedBy.length < n) editedBy.push(['','','','']);
+  vals     = vals.slice(0,n);
+  editedBy = editedBy.slice(0,n);
 }
 
 window.exportCSV = () => {
   const st = STAGES[stage], fl = flatItems();
-  let csv = `물품명,향,${st.inCol},${st.outCol},${st.diffLabel}\n`;
+  let csv = `물품명,향,${st.inCol},${st.outCol},${st.diffLabel},수정자\n`;
   fl.forEach((item,i) => {
     const iv = getInVal(i), ov = vals[i]?.[stage]??'';
-    csv += `"${item.name}","${item.scent||''}",${iv},${ov},${ov!==''?ov-iv:''}\n`;
+    csv += `"${item.name}","${item.scent||''}",${iv},${ov},${ov!==''?ov-iv:''},"${editedBy[i]?.[stage]||''}"\n`;
   });
   const a = document.createElement('a');
   a.href = URL.createObjectURL(new Blob(['\uFEFF'+csv],{type:'text/csv;charset=utf-8;'}));
@@ -478,6 +539,16 @@ window.confirmReset = async () => {
   await saveToFirebase();
   render();
 };
+
+/* ── 시작: 이름 확인 ── */
+const saved = localStorage.getItem('scentory_name');
+if (saved) {
+  myName = saved;
+  document.getElementById('user-chip').textContent = '👤 ' + myName;
+  document.getElementById('modal-name').style.display = 'none';
+} else {
+  askName();
+}
 </script>
 </body>
 </html>
